@@ -1,5 +1,17 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, Button, TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+    Dimensions,
+    View,
+    Text,
+    StyleSheet,
+    TextInput,
+    Button,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Alert,
+    ScrollView,
+    KeyboardAvoidingView
+} from "react-native";
 import Card from '../components/Card'
 import Input from '../components/Input'
 import BodyText from '../components/BodyText'
@@ -14,10 +26,23 @@ const StartGameScreen = props => {
     const [enteredValue, setEnteredValue] = useState('')
     const [confirmed, setConfirmed] = useState(false)
     const [selectedNumber, setSelectedNumber] = useState()
+    const [buttonWidth, setButtonWidth] = useState(Dimensions.get('window').width / 4)
 
     const numberInputHandler = inputText => {
         setEnteredValue(inputText.replace(/[^0-9]/g, ''))
     }
+
+    useEffect(() => {
+        const updateLayout = () => {
+            setButtonWidth(Dimensions.get('window').width / 4)
+        }
+
+        // quando cambiano le dimensioni del device (e.g., cambia orientation)
+        Dimensions.addEventListener('change', updateLayout)
+        return () => {
+            Dimensions.removeEventListener('change', updateLayout)
+        }
+    })
 
     const resetInputHandler = () => {
         setEnteredValue('')
@@ -58,40 +83,45 @@ const StartGameScreen = props => {
     }
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={styles.screen}>
-                <TitleText style={styles.title}>Start a New Game!</TitleText>
-                <Card style={styles.inputContainer}>
-                    <BodyText style={styles.text}>Select a number</BodyText>
-                    {/* blurOnSubmit serve su android per togliere la soft keyboard quando si preme invio */}
-                    <Input
-                        style={styles.input}
-                        maxLength={2}
-                        keyboardType='number-pad'
-                        autoCorrent={false}
-                        blurOnSubmit
-                        autoCapitalize='none'
-                        onChangeText={numberInputHandler}
-                        value={enteredValue}
-                    />
-                    <View style={styles.buttonContainer}>
-                        <View style={styles.button}>
-                            <Button
-                                color={Colors.secondary}
-                                title='Reset'
-                                onPress={resetInputHandler} />
-                        </View>
-                        <View style={styles.button}>
-                            <Button
-                                color={Colors.primary}
-                                title='Confirm'
-                                onPress={confimInputHandler} />
-                        </View>
+        <ScrollView>
+            {/* Per mostrare l'input sopra la tastiera */}
+            <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={30}>
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <View style={styles.screen}>
+                        <TitleText style={styles.title}>Start a New Game!</TitleText>
+                        <Card style={styles.inputContainer}>
+                            <BodyText style={styles.text}>Select a number</BodyText>
+                            {/* blurOnSubmit serve su android per togliere la soft keyboard quando si preme invio */}
+                            <Input
+                                style={styles.input}
+                                maxLength={2}
+                                keyboardType='number-pad'
+                                autoCorrent={false}
+                                blurOnSubmit
+                                autoCapitalize='none'
+                                onChangeText={numberInputHandler}
+                                value={enteredValue}
+                            />
+                            <View style={styles.buttonContainer}>
+                                <View style={{ width: buttonWidth }}>
+                                    <Button
+                                        color={Colors.secondary}
+                                        title='Reset'
+                                        onPress={resetInputHandler} />
+                                </View>
+                                <View style={{ width: buttonWidth }}>
+                                    <Button
+                                        color={Colors.primary}
+                                        title='Confirm'
+                                        onPress={confimInputHandler} />
+                                </View>
+                            </View>
+                        </Card>
+                        {confirmedOutput}
                     </View>
-                </Card>
-                {confirmedOutput}
-            </View>
-        </TouchableWithoutFeedback>
+                </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
+        </ScrollView>
     );
 };
 
@@ -108,8 +138,10 @@ const styles = StyleSheet.create({
 
     },
     inputContainer: {
-        width: 300,
-        maxWidth: '80%', // nel caso dei dispositivi non abbiamo 300pixel di width setto che al max si può occupare l'80% dello spazio
+        width: '80%',
+        minWidth: 300,
+        maxWidth: '95%',
+        //maxWidth: '80%', // nel caso dei dispositivi non abbiamo 300pixel di width setto che al max si può occupare l'80% dello spazio
         alignItems: 'center',
     },
     buttonContainer: {
@@ -118,9 +150,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 15
     },
-    button: {
-        width: '40%'
-    },
+    // button: {
+    //     // width: 100
+    //     width: Dimensions.get('window').width / 4
+    // },
     input: {
         width: 50,
         textAlign: 'center'

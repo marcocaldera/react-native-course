@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
 import * as Font from 'expo-font'
 import { AppLoading } from "expo";
 
@@ -57,10 +57,11 @@ export default function App() {
   }
 
   return (
-    <View style={styles.screen}>
+    // Va messa nell'App.js, se si usa la Navigation se ne occupa in automatico lei e non serve aggiungere queste cose
+    <SafeAreaView style={styles.screen}>
       <Header title={'Guess a number'} />
       {content}
-    </View>
+    </SafeAreaView>
   );
 }
 

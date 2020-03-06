@@ -1,8 +1,9 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform, Button } from 'react-native'
 import Colors from '../constants/colors'
 
 const MainButton = (props) => {
+
     return (
         <TouchableOpacity activeOpacity={0.8} onPress={props.onPress}>
             <View style={styles.button}>
@@ -24,7 +25,6 @@ const styles = StyleSheet.create({
         fontFamily: 'open-sans',
         fontSize: 20
     }
-
 })
 
 export default MainButton
